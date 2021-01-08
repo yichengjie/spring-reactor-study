@@ -44,4 +44,16 @@ public class CreateFuncTest {
         CountDownLatch latch = new CountDownLatch(1);
         latch.await();
     }
+
+    @Test
+    public void error(){
+        Flux.error(new RuntimeException())
+            .subscribe(System.out::println);
+    }
+
+    @Test
+    public void range(){
+        Flux.range(1, 10)
+            .subscribe(System.out::println) ;
+    }
 }
