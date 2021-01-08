@@ -14,15 +14,21 @@ public class HelloService {
     private WebClient webClient ;
 
     public Mono<UserInfo> findById(Integer userId){
-//        return webClient.get().uri("/users/"+ userId)
-//                .accept(MediaType.APPLICATION_JSON)
-//                .exchange()
-//                .flatMap(cr -> cr.bodyToMono(UserInfo.class)) ;
+        return webClient.get()
+                .uri("/users/"+ userId)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .log()
+                .flatMap(cr -> {
+                    return cr.bodyToMono(UserInfo.class) ;
+                }) ;
+    }
 
-        Mono<UserInfo> mono = webClient.get().uri("/users/"+ userId).retrieve().bodyToMono(UserInfo.class);
-        //同步方式
-        //System.out.println("get block返回结果：" + mono.block());
-        return mono ;
+    public Mono<UserInfo> findById2(Integer userId){
+        return webClient.get()
+                .uri("/users/"+ userId)
+                .retrieve()
+                .bodyToMono(UserInfo.class);
     }
 
 }
