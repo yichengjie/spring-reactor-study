@@ -5,6 +5,8 @@ import org.junit.Test;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -15,7 +17,7 @@ public class MapAndFlatMapTest {
 
     // 转换操作异步操作
     @Test
-    public void flatMap3() throws InterruptedException {
+    public void flatMap() throws InterruptedException {
         Flux.just(1,2,3)
             .log()
             .flatMap(e -> {
@@ -26,7 +28,7 @@ public class MapAndFlatMapTest {
 
     // 转换操作同步操作
     @Test
-    public void map3() throws InterruptedException {
+    public void map() throws InterruptedException {
         Flux.just(1,2,3)
             .log()
             .map(e -> {
@@ -37,5 +39,15 @@ public class MapAndFlatMapTest {
                 }
                 return e *2;
             }).subscribe(e -> log.info("get : {}", e)) ;
+    }
+
+    @Test
+    public void test1(){
+        List<Integer> list = Arrays.asList(1,2,3) ;
+        Flux<Integer> just1 = Flux.just(1, 2, 3);
+
+        Flux<List<Integer>> just = Flux.just(list);
+        just.flatMap(Flux::fromIterable)
+            .subscribe(System.out::println) ;
     }
 }
