@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class UserHandlerFunction {
 
-    public Mono<ServerResponse> hello(ServerRequest request){
+    public Mono<ServerResponse> findById(ServerRequest request){
         String id = request.pathVariable("id");
         UserInfo userInfo = UserInfo.builder()
                 .id(Integer.parseInt(id))
