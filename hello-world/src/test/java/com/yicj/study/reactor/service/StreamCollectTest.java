@@ -101,6 +101,55 @@ public class StreamCollectTest {
                 "", Dish::getName, (s1, s2) -> s1 + s2
         ));
         log.info("short menu : {}", shortMenu);
+    }
 
+    @Test
+    public void testGroupingBy(){
+        Map<Dish.Type, List<Dish>> map = menu.stream()
+                .collect(Collectors.groupingBy(Dish::getType));
+        map.keySet().stream().forEach(key ->{
+            List<Dish> dishes = map.get(key);
+            log.info("--------------key:{}-----------------", key);
+            dishes.stream().map(Dish::toString).forEach(log::info);
+        });
+    }
+
+    @Test
+    public void testGroupingBy2(){
+        Map<Dish.CaloricLevel, List<Dish>> map = menu.stream()
+                .collect(Collectors.groupingBy(dish -> {
+                    if (dish.getCalories() <= 400) {
+                        return Dish.CaloricLevel.DIET;
+                    } else if (dish.getCalories() <= 700) {
+                        return Dish.CaloricLevel.NORMAL;
+                    } else {
+                        return Dish.CaloricLevel.FAT;
+                    }
+                }));
+    }
+
+
+    @Test
+    public void testGroupingBy3(){
+        Map<Dish.Type, Map<Dish.CaloricLevel, List<Dish>>> map = menu.stream().collect(
+                Collectors.groupingBy(Dish::getType, Collectors.groupingBy(dish -> {
+                    if (dish.getCalories() <= 400) {
+                        return Dish.CaloricLevel.DIET;
+                    } else if (dish.getCalories() <= 700) {
+                        return Dish.CaloricLevel.NORMAL;
+                    } else {
+                        return Dish.CaloricLevel.FAT;
+                    }
+                }))
+        );
+        log.info("map : {}", map);
+    }
+
+    @Test
+    public void testGroupingBy4(){
+        Map<Dish.Type, Long> collect = menu.stream().collect(
+                Collectors.groupingBy(Dish::getType, Collectors.counting())
+        );
+        log.info("map : {}", collect);
     }
 }
