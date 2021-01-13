@@ -13,16 +13,22 @@ public class ShopTest {
             new Shop("LetsSaveBig"),
             new Shop("MyFavoritesShop"),
             new Shop("BuyItAll"),
-            new Shop("BuyItAll2"),
-            new Shop("BuyItAll3"),
-            new Shop("BuyItAll3"),
-            new Shop("BuyItAll3"),
-            new Shop("BuyItAll3")
+            new Shop("BuyItAll2")
             );
+
+    private Executor executor = Executors.newFixedThreadPool(Math.min(shops.size(), 100), new ThreadFactory() {
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(r);
+            // 使用守护线程：这一种方式不会阻止程序的关停
+            t.setDaemon(true);
+            return t;
+        }
+    });
 
     @Test
     public void getPriceAsync(){
-        Shop shopService = new Shop();
+        Shop shopService = new Shop("Hello");
         long start = System.nanoTime();
         Future<Double> futurePrice = shopService.getPriceAsync("my favorite product");
         long invocationTime = ((System.nanoTime() - start) / 1_000_000) ;
@@ -107,15 +113,6 @@ public class ShopTest {
 
     @Test
     public void findPrice5(){
-        Executor executor = Executors.newFixedThreadPool(Math.min(shops.size(), 100), new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r);
-                // 使用守护线程：这一种方式不会阻止程序的关停
-                t.setDaemon(true);
-                return t;
-            }
-        });
 
         long start = System.nanoTime();
         List<CompletableFuture<String>> priceFuture = shops.stream()
