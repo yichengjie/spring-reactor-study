@@ -23,5 +23,7 @@
     <modules>
         <module>hello-world</module>
         <module>user-service-api</module>
+        <module>optional-study</module>
+        <module>completable-future-study</module>
     </modules>
 </project>
