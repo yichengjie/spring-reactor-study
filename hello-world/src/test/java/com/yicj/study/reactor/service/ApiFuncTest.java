@@ -29,6 +29,25 @@ public class ApiFuncTest {
     }
 
     @Test
+    public void filter(){
+        Flux.create(fluxSink -> {
+            fluxSink.next("create1") ;
+            fluxSink.next("create2") ;
+            fluxSink.next("create3") ;
+            fluxSink.complete();
+        }).filter(item -> item != null).subscribe(value ->{
+            System.out.println(value);
+        }) ;
+    }
+
+    @Test
+    public void array(){
+        String [] arr = {"create1", "create2", "create3"} ;
+        Flux.fromArray(arr).subscribe(System.out::println) ;
+    }
+
+
+    @Test
     public void generate(){
         Flux.generate(sink -> {
             sink.next("generate");
