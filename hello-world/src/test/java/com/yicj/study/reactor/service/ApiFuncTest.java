@@ -2,8 +2,11 @@ package com.yicj.study.reactor.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 import reactor.util.function.Tuple2;
@@ -43,6 +46,68 @@ public class ApiFuncTest {
         }).filter(item -> item != null).subscribe(value ->{
             System.out.println(value);
         }) ;
+    }
+
+    @Test
+    public void fromRunnable() throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1) ;
+        Mono.fromRunnable(()->{
+            log.info("runnable info hello");
+        }).publishOn(Schedulers.newSingle("test"))
+        .subscribe(new Subscriber<Object>() {
+            @Override
+            public void onSubscribe(Subscription s) {
+                log.info("onSubscribe !");
+            }
+            @Override
+            public void onNext(Object o) {
+                log.info("onNext value : {}", o);
+            }
+            @Override
+            public void onError(Throwable t) {
+                log.error("error : {}", t.getMessage());
+            }
+            @Override
+            public void onComplete() {
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                log.info("onComplete !");
+                latch.countDown();
+            }
+        }) ;
+        log.info("===== end ...");
+        latch.await();
+    }
+
+
+    private void sleep(long millis){
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void fluxCreate(){
+        Flux.create(emitter -> {
+            for (int i =0 ; i < 1000; i++){
+                if (emitter.isCancelled()){
+                    return;
+                }
+                log.info("Source create : {}", i);
+                emitter.next(i) ;
+            }
+        }).doOnNext(s -> log.info("Source push {}", s))
+        .publishOn(Schedulers.single())
+        .subscribe(id -> {
+            sleep(10);
+            log.info("所获取到的Customer的id为: {}", id);
+        }) ;
+        sleep(12000);
     }
 
     @Test
@@ -159,7 +224,6 @@ public class ApiFuncTest {
             .expectNextMatches(p -> p.getT1().equals("Kojak") && p.getT2().equals("Lollipops"))
             .expectNextMatches(p -> p.getT1().equals("Barbossa") && p.getT2().equals("Apples"))
             .verifyComplete() ;
-
     }
 
 }
