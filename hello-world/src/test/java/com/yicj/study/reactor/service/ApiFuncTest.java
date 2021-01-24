@@ -3,6 +3,7 @@ package com.yicj.study.reactor.service;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 import reactor.util.function.Tuple2;
@@ -12,17 +13,21 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
 
 @Slf4j
 public class ApiFuncTest {
 
     @Test
     public void create(){
-        Flux.create(fluxSink -> {
-            fluxSink.next("create1") ;
-            fluxSink.next("create2") ;
-            fluxSink.next("create3") ;
-            fluxSink.complete();
+        Flux.create(new Consumer<FluxSink<String>>() {
+            @Override
+            public void accept(FluxSink<String> fluxSink) {
+                fluxSink.next("create1") ;
+                fluxSink.next("create2") ;
+                fluxSink.next("create3") ;
+                fluxSink.complete();
+            }
         }).subscribe(value ->{
             System.out.println(value);
         }) ;
