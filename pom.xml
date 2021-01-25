@@ -26,6 +26,7 @@
         <module>user-service-api</module>
         <module>optional-study</module>
         <module>completable-future-study</module>
+        <module>activemq-study</module>
     </modules>
 
     <dependencyManagement>
