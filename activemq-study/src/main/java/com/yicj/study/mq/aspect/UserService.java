@@ -14,4 +14,14 @@ public class UserService {
         }
         return "success" ;
     }
+
+    @MetricTime2("register2")
+    public String register2(String name, String password, String email){
+        try {
+            Thread.sleep(345);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "success2" ;
+    }
 }

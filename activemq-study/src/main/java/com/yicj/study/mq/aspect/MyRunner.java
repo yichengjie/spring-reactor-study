@@ -13,6 +13,8 @@ public class MyRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         String result = userService.register("yicj", "123", "xx@qq.com");
+        String result2 = userService.register2("yicj", "123", "xx@qq.com");
         System.out.println("=====> " + result);
+        System.out.println("=====> " + result2);
     }
 }
