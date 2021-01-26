@@ -12,6 +12,7 @@ import java.util.concurrent.CompletableFuture;
  *   2.3 thenApplyAsync()用于串行化另一个CompletableFuture；
  * 3. anyOf()和allOf()用于并行化多个CompletableFuture。
  */
+//参考：https://www.liaoxuefeng.com/wiki/1252599548343744/1306581182447650
 public class CompletableFutureTest {
 
     @Test
