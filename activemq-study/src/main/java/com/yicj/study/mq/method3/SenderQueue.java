@@ -1,6 +1,8 @@
 package com.yicj.study.mq.method3;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import reactor.core.publisher.Mono;
+
 import javax.jms.*;
 import java.util.UUID;
 
@@ -39,17 +41,23 @@ public class SenderQueue {
 
 		//等待消息回复
 		MessageConsumer consumer = session.createConsumer(queue,"JMSCorrelationID='"+cid+"' and type='P'");
-		consumer.setMessageListener(new MessageListener() {
-			@Override
-			public void onMessage(Message message) {
-				System.out.println("P 收到消息确认");
-				try {
-					//7.关闭连接
-					connection.close();
-				} catch (JMSException e) {
-					e.printStackTrace();
-				}
+		Mono.create(monoSink -> {
+			try {
+				consumer.setMessageListener(message -> {
+					try {
+						//7.关闭连接
+						monoSink.success("P 收到消息确认");
+						connection.close();
+					} catch (JMSException e) {
+						e.printStackTrace();
+					}
+				});
+			}catch (Exception e){
+				e.printStackTrace();
 			}
-		});
+		}).subscribe(value ->{
+			System.out.println("==========> value : " + value);
+		}) ;
+
 	}
 }
