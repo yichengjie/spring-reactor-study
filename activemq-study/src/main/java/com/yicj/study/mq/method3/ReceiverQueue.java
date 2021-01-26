@@ -23,30 +23,27 @@ public class ReceiverQueue {
 		//5.消息消费者
 		MessageConsumer consumer = session.createConsumer(queue,"type='C'");
 		//6.从目的地获取消息
-		consumer.setMessageListener(new MessageListener() {
-			@Override
-			public void onMessage(Message message) {
+		consumer.setMessageListener(message -> {
+			try {
+				System.out.println("接收到一条消息");
+				System.out.println("开始发送确认消息");
+				MessageProducer producer = session.createProducer(queue);
+				String cid=message.getJMSCorrelationID();
+				TextMessage textMessage =session.createTextMessage("xxxx...");
+				textMessage.setJMSCorrelationID(cid);
+				textMessage.setStringProperty("type","P");
+				producer.send(textMessage);
+			} catch (JMSException e) {
+				e.printStackTrace();
+			}finally {
 				try {
-					System.out.println("接收到一条消息");
-					System.out.println("开始发送确认消息");
-					MessageProducer producer = session.createProducer(queue);
-					String cid=message.getJMSCorrelationID();
-					TextMessage textMessage =session.createTextMessage("xxxx...");
-					textMessage.setJMSCorrelationID(cid);
-					textMessage.setStringProperty("type","P");
-					producer.send(textMessage);
+					connection.close();
 				} catch (JMSException e) {
 					e.printStackTrace();
-				}finally {
-					try {
-						connection.close();
-					} catch (JMSException e) {
-						e.printStackTrace();
-					}
 				}
 			}
 		});
- 
+		System.in.read();
 	}
  
 }
