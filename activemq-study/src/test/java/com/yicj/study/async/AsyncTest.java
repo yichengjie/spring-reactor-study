@@ -1,10 +1,8 @@
 package com.yicj.study.async;
 
-import io.netty.util.concurrent.CompleteFuture;
 import org.junit.Test;
 import org.springframework.web.context.request.async.DeferredResult;
 import reactor.core.publisher.Mono;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
