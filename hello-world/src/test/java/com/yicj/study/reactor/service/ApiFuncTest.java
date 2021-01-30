@@ -14,6 +14,7 @@ import reactor.util.function.Tuple2;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
@@ -132,6 +133,26 @@ public class ApiFuncTest {
             .subscribe(System.out::println);
     }
 
+    //ono.just创建的数据源时间没变，但是Mono.defer创建的数据源时间相应的延迟了5秒钟，
+    // 原因在于Mono.just会在声明阶段构造Date对象，只创建一次，
+    // 但是Mono.defer却是在subscribe阶段才会创建对应的Date对象，每次调用subscribe方法都会创建Date对象
+    @Test
+    public void defer2(){
+        //声明阶段创建DeferClass对象
+        Mono<Date> m1 = Mono.just(new Date());
+        Mono<Date> m2 = Mono.defer(()->Mono.just(new Date()));
+        m1.subscribe(System.out::println);
+        m2.subscribe(System.out::println);
+        //延迟5秒钟
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        m1.subscribe(System.out::println);
+        m2.subscribe(System.out::println);
+    }
+
     @Test
     public void interval() throws InterruptedException {
         Flux<Long> intervalFlux = Flux.interval(Duration.of(500, ChronoUnit.MILLIS))
@@ -147,6 +168,9 @@ public class ApiFuncTest {
 //        CountDownLatch latch = new CountDownLatch(1);
 //        latch.await();
     }
+
+
+
 
     @Test
     public void error(){
